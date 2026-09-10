@@ -168,9 +168,7 @@ export async function GET(
           <Text style={styles.signatureLine}>Assinatura do Responsável - Tamboleco</Text>
         </View>
 
-        <Text style={styles.footer}>
-          Tamboleco Mini Entulho - Este documento não constitui assinatura eletrônica certificada.
-        </Text>
+        <Text style={styles.footer}>Tamboleco Mini Entulho</Text>
       </Page>
     </Document>
   );
