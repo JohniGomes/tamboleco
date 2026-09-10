@@ -4,6 +4,8 @@ import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
 import { LataoStatusBadge } from "@/components/ui/Badge";
 import { LataoStatusSelect } from "@/components/LataoStatusSelect";
 import { NovoLataoForm } from "@/components/NovoLataoForm";
+import { DeleteButton } from "@/components/ui/DeleteButton";
+import { deleteLatao } from "./actions";
 import type { Latao } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +42,7 @@ export default async function LatoesPage() {
             <Th>Status</Th>
             <Th>Observações</Th>
             <Th>Alterar Status</Th>
+            <Th></Th>
           </tr>
         </Thead>
         <tbody>
@@ -53,11 +56,17 @@ export default async function LatoesPage() {
               <Td>
                 <LataoStatusSelect id={l.id} status={l.status} />
               </Td>
+              <Td>
+                <DeleteButton
+                  onDelete={deleteLatao.bind(null, l.id)}
+                  confirmMessage={`Excluir o latão "${l.numero}"?`}
+                />
+              </Td>
             </Tr>
           ))}
           {!list.length && (
             <Tr>
-              <Td colSpan={4} className="text-center text-gray-400">
+              <Td colSpan={5} className="text-center text-gray-400">
                 Nenhum latão cadastrado.
               </Td>
             </Tr>

@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { LinkButton } from "@/components/ui/Button";
 import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
 import { AluguelStatusBadge } from "@/components/ui/Badge";
+import { DeleteButton } from "@/components/ui/DeleteButton";
+import { deleteAluguel } from "./actions";
 import { formatBRL, formatDate, todayISO } from "@/lib/format";
 import type { AluguelComCliente } from "@/lib/types";
 
@@ -72,6 +74,7 @@ export default async function AlugueisPage({
             <Th>Qtd.</Th>
             <Th>Valor</Th>
             <Th>Status</Th>
+            <Th></Th>
           </tr>
         </Thead>
         <tbody>
@@ -98,11 +101,17 @@ export default async function AlugueisPage({
               <Td>
                 <AluguelStatusBadge status={a.effectiveStatus} />
               </Td>
+              <Td>
+                <DeleteButton
+                  onDelete={deleteAluguel.bind(null, a.id)}
+                  confirmMessage={`Excluir o aluguel em "${a.endereco_obra}"? O lançamento financeiro vinculado também será removido.`}
+                />
+              </Td>
             </Tr>
           ))}
           {!displayed?.length && (
             <Tr>
-              <Td colSpan={7} className="text-center text-gray-400">
+              <Td colSpan={8} className="text-center text-gray-400">
                 Nenhum aluguel encontrado.
               </Td>
             </Tr>

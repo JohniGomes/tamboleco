@@ -28,3 +28,9 @@ export async function updateLataoStatus(id: string, status: string) {
   await supabase.from("latoes").update({ status }).eq("id", id);
   revalidatePath("/latoes");
 }
+
+export async function deleteLatao(id: string) {
+  const supabase = await createClient();
+  await supabase.from("latoes").delete().eq("id", id);
+  revalidatePath("/latoes");
+}

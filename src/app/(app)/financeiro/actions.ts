@@ -56,3 +56,11 @@ export async function updateLancamentoStatus(id: string, status: string) {
   revalidatePath("/pagamentos");
   revalidatePath("/");
 }
+
+export async function deleteLancamento(id: string) {
+  const supabase = await createClient();
+  await supabase.from("financeiro").delete().eq("id", id);
+  revalidatePath("/financeiro");
+  revalidatePath("/pagamentos");
+  revalidatePath("/");
+}

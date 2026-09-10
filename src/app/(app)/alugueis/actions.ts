@@ -122,6 +122,16 @@ export async function updateAluguel(id: string, _prev: AluguelFormState, formDat
   return {};
 }
 
+export async function deleteAluguel(id: string) {
+  const supabase = await createClient();
+  await supabase.from("financeiro").delete().eq("aluguel_id", id);
+  await supabase.from("alugueis").delete().eq("id", id);
+  revalidatePath("/alugueis");
+  revalidatePath("/financeiro");
+  revalidatePath("/pagamentos");
+  revalidatePath("/");
+}
+
 export async function salvarReciboPath(aluguelId: string, path: string) {
   const supabase = await createClient();
   await supabase.from("alugueis").update({ recibo_pdf_path: path }).eq("id", aluguelId);

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { LinkButton } from "@/components/ui/Button";
 import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
+import { DeleteButton } from "@/components/ui/DeleteButton";
+import { deleteCliente } from "./actions";
 import type { Cliente } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -48,6 +50,7 @@ export default async function ClientesPage({
             <Th>Telefone</Th>
             <Th>CPF/CNPJ</Th>
             <Th>E-mail</Th>
+            <Th></Th>
           </tr>
         </Thead>
         <tbody>
@@ -62,11 +65,17 @@ export default async function ClientesPage({
               <Td>{c.telefone ?? "-"}</Td>
               <Td>{c.cpf_cnpj ?? "-"}</Td>
               <Td>{c.email ?? "-"}</Td>
+              <Td>
+                <DeleteButton
+                  onDelete={deleteCliente.bind(null, c.id)}
+                  confirmMessage={`Excluir o cliente "${c.nome}"? Isso não remove aluguéis/lançamentos já vinculados a ele.`}
+                />
+              </Td>
             </Tr>
           ))}
           {!clientes?.length && (
             <Tr>
-              <Td colSpan={5} className="text-center text-gray-400">
+              <Td colSpan={6} className="text-center text-gray-400">
                 Nenhum cliente encontrado.
               </Td>
             </Tr>

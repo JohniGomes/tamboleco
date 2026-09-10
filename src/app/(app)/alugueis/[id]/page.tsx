@@ -6,6 +6,7 @@ import { AluguelStatusBadge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
 import { RecolherButton } from "@/components/RecolherButton";
 import { ReciboUploader } from "@/components/ReciboUploader";
+import { AluguelDeleteButton } from "@/components/AluguelDeleteButton";
 import { formatBRL, formatDate, todayISO } from "@/lib/format";
 import type { AluguelComCliente } from "@/lib/types";
 
@@ -111,6 +112,7 @@ export default async function AluguelDetailPage({
         <LinkButton href={`/alugueis`} variant="secondary">
           Voltar
         </LinkButton>
+        <AluguelDeleteButton aluguelId={aluguel.id} endereco={aluguel.endereco_obra} />
       </div>
 
       <Card className="space-y-3">

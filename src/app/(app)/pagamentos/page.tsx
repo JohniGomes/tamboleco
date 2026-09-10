@@ -3,6 +3,8 @@ import { StatCard } from "@/components/ui/Card";
 import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
 import { FinanceiroStatusBadge } from "@/components/ui/Badge";
 import { LancamentoStatusSelect } from "@/components/LancamentoStatusSelect";
+import { DeleteButton } from "@/components/ui/DeleteButton";
+import { deleteLancamento } from "@/app/(app)/financeiro/actions";
 import { formatBRL, formatDate, todayISO } from "@/lib/format";
 import { CATEGORIA_LABELS } from "@/lib/types";
 import type { FinanceiroComRelacoes } from "@/lib/types";
@@ -105,6 +107,7 @@ export default async function PagamentosPage({
             <Th>Tipo</Th>
             <Th>Valor</Th>
             <Th>Status</Th>
+            <Th></Th>
           </tr>
         </Thead>
         <tbody>
@@ -120,11 +123,17 @@ export default async function PagamentosPage({
                 <FinanceiroStatusBadge status={f.status} />
                 <LancamentoStatusSelect id={f.id} status={f.status} />
               </Td>
+              <Td>
+                <DeleteButton
+                  onDelete={deleteLancamento.bind(null, f.id)}
+                  confirmMessage={`Excluir o lançamento "${f.descricao}"?`}
+                />
+              </Td>
             </Tr>
           ))}
           {!list.length && (
             <Tr>
-              <Td colSpan={7} className="text-center text-gray-400">
+              <Td colSpan={8} className="text-center text-gray-400">
                 Nenhum lançamento encontrado.
               </Td>
             </Tr>

@@ -3,9 +3,12 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ClienteForm } from "@/components/ClienteForm";
 import { updateCliente } from "@/app/(app)/clientes/actions";
+import { deleteAluguel } from "@/app/(app)/alugueis/actions";
+import { deleteLancamento } from "@/app/(app)/financeiro/actions";
 import { Card } from "@/components/ui/Card";
 import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
 import { AluguelStatusBadge, FinanceiroStatusBadge } from "@/components/ui/Badge";
+import { DeleteButton } from "@/components/ui/DeleteButton";
 import { formatBRL, formatDate } from "@/lib/format";
 import type { Aluguel, Cliente, Financeiro } from "@/lib/types";
 
@@ -59,6 +62,7 @@ export default async function ClienteDetailPage({
               <Th>Qtd.</Th>
               <Th>Valor</Th>
               <Th>Status</Th>
+              <Th></Th>
             </tr>
           </Thead>
           <tbody>
@@ -75,11 +79,17 @@ export default async function ClienteDetailPage({
                 <Td>
                   <AluguelStatusBadge status={a.status} />
                 </Td>
+                <Td>
+                  <DeleteButton
+                    onDelete={deleteAluguel.bind(null, a.id)}
+                    confirmMessage={`Excluir o aluguel em "${a.endereco_obra}"? O lançamento financeiro vinculado também será removido.`}
+                  />
+                </Td>
               </Tr>
             ))}
             {!alugueis?.length && (
               <Tr>
-                <Td colSpan={5} className="text-center text-gray-400">
+                <Td colSpan={6} className="text-center text-gray-400">
                   Nenhum aluguel registrado.
                 </Td>
               </Tr>
@@ -98,6 +108,7 @@ export default async function ClienteDetailPage({
               <Th>Tipo</Th>
               <Th>Valor</Th>
               <Th>Status</Th>
+              <Th></Th>
             </tr>
           </Thead>
           <tbody>
@@ -112,11 +123,17 @@ export default async function ClienteDetailPage({
                 <Td>
                   <FinanceiroStatusBadge status={f.status} />
                 </Td>
+                <Td>
+                  <DeleteButton
+                    onDelete={deleteLancamento.bind(null, f.id)}
+                    confirmMessage={`Excluir o lançamento "${f.descricao}"?`}
+                  />
+                </Td>
               </Tr>
             ))}
             {!lancamentos?.length && (
               <Tr>
-                <Td colSpan={5} className="text-center text-gray-400">
+                <Td colSpan={6} className="text-center text-gray-400">
                   Nenhum lançamento financeiro.
                 </Td>
               </Tr>
