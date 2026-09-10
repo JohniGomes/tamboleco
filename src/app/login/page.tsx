@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Input, Field } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -32,8 +33,15 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-tamboleco-950 px-4">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-tamboleco-500 text-2xl font-bold text-white">
-            T
+          <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center">
+            <Image
+              src="/mascote-tamboleco.png"
+              alt="Mascote Tamboleco"
+              width={64}
+              height={64}
+              className="h-full w-full object-contain"
+              priority
+            />
           </div>
           <h1 className="text-lg font-bold text-tamboleco-950">Tamboleco Mini Entulho</h1>
           <p className="text-sm text-gray-500">Sistema de Gestão</p>

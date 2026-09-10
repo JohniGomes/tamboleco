@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { SidebarNav } from "@/components/SidebarNav";
 import { LogoutButton } from "@/components/LogoutButton";
 
@@ -6,8 +7,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen w-full">
       <aside className="hidden w-60 shrink-0 flex-col bg-tamboleco-950 md:flex">
         <div className="flex items-center gap-2 px-4 py-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-tamboleco-500 text-lg font-bold text-white">
-            T
+          <div className="flex h-9 w-9 items-center justify-center">
+            <Image
+              src="/mascote-tamboleco.png"
+              alt="Mascote Tamboleco"
+              width={36}
+              height={36}
+              className="h-full w-full object-contain"
+            />
           </div>
           <div className="leading-tight">
             <p className="text-sm font-bold text-white">Tamboleco</p>
