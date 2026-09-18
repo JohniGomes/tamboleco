@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { SidebarNav } from "@/components/SidebarNav";
 import { LogoutButton } from "@/components/LogoutButton";
+import { ChatWidget } from "@/components/ChatWidget";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -31,6 +32,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
         <main className="flex-1 bg-background p-4 md:p-8">{children}</main>
       </div>
+
+      <ChatWidget />
     </div>
   );
 }
