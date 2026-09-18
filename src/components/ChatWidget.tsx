@@ -16,6 +16,14 @@ const SAUDACAO = `Oi! Eu sou a IA do Tamboleco 👋 O que você deseja hoje? Eu 
   (c) => `• ${c}`
 ).join("\n")}\n\nÉ só me perguntar, por exemplo: "quantos latões estão atrasados?" ou "aluga 2 latões pro João na Rua das Flores amanhã, R$150 cada".`;
 
+function limparMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/(?<!\*)\*(?!\*)(.*?)\*(?!\*)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^-\s+/gm, "• ");
+}
+
 interface AluguelDraft {
   cliente_id: string;
   cliente_nome: string;
@@ -72,7 +80,10 @@ export function ChatWidget() {
         setMessages((prev) => [...prev, { role: "model", text: data.error ?? "Erro ao falar com a IA." }]);
         return;
       }
-      setMessages((prev) => [...prev, { role: "model", text: data.reply, draft: data.draftAluguel ?? undefined }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "model", text: limparMarkdown(data.reply), draft: data.draftAluguel ?? undefined },
+      ]);
     } catch {
       setMessages((prev) => [...prev, { role: "model", text: "Não consegui me conectar. Tente novamente." }]);
     } finally {
