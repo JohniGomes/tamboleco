@@ -7,7 +7,9 @@ import { LinkButton } from "@/components/ui/Button";
 import { RecolherButton } from "@/components/RecolherButton";
 import { ReciboUploader } from "@/components/ReciboUploader";
 import { AluguelDeleteButton } from "@/components/AluguelDeleteButton";
-import { formatBRL, formatDate, todayISO } from "@/lib/format";
+import { AluguelForm } from "@/components/AluguelForm";
+import { updateAluguel } from "@/app/(app)/alugueis/actions";
+import { formatDate, todayISO } from "@/lib/format";
 import type { AluguelComCliente } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -20,11 +22,14 @@ export default async function AluguelDetailPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data } = await supabase
-    .from("alugueis")
-    .select("*, clientes(id, nome, telefone, cpf_cnpj, endereco)")
-    .eq("id", id)
-    .single();
+  const [{ data }, { data: clientes }] = await Promise.all([
+    supabase
+      .from("alugueis")
+      .select("*, clientes(id, nome, telefone, cpf_cnpj, endereco)")
+      .eq("id", id)
+      .single(),
+    supabase.from("clientes").select("id, nome, cpf_cnpj").order("nome"),
+  ]);
 
   if (!data) return notFound();
   const aluguel = data as AluguelComCliente;
@@ -63,40 +68,20 @@ export default async function AluguelDetailPage({
         <AluguelStatusBadge status={effectiveStatus} />
       </div>
 
-      <Card className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div>
-          <p className="text-xs text-gray-500">Data de Entrega</p>
-          <p className="font-medium">{formatDate(aluguel.data_entrega)}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">Recolhimento Previsto</p>
-          <p className="font-medium">{formatDate(aluguel.data_prevista_recolhimento)}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">Recolhimento Efetivo</p>
-          <p className="font-medium">{formatDate(aluguel.data_efetiva_recolhimento)}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">Quantidade de Latões</p>
-          <p className="font-medium">{aluguel.quantidade_latoes}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">Valor Unitário</p>
-          <p className="font-medium">{formatBRL(aluguel.valor_unitario)}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">Valor Total</p>
-          <p className="font-medium">{formatBRL(aluguel.valor_total)}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500">Forma de Pagamento</p>
-          <p className="font-medium">{aluguel.forma_pagamento ?? "-"}</p>
-        </div>
-        {aluguel.observacoes && (
-          <div className="sm:col-span-3">
-            <p className="text-xs text-gray-500">Observações</p>
-            <p className="font-medium">{aluguel.observacoes}</p>
-          </div>
+      <Card>
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+          Dados do Aluguel
+        </h2>
+        <AluguelForm
+          clientes={clientes ?? []}
+          aluguel={aluguel}
+          action={updateAluguel.bind(null, id)}
+          submitLabel="Salvar Alterações"
+        />
+        {aluguel.data_efetiva_recolhimento && (
+          <p className="mt-4 text-xs text-gray-500">
+            Recolhimento efetivo em {formatDate(aluguel.data_efetiva_recolhimento)}.
+          </p>
         )}
       </Card>
 
