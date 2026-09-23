@@ -43,6 +43,7 @@ export interface Aluguel {
 
 export interface AluguelComCliente extends Aluguel {
   clientes?: Pick<Cliente, "id" | "nome" | "telefone" | "cpf_cnpj" | "endereco"> | null;
+  financeiro?: Pick<Financeiro, "id" | "status" | "tipo" | "categoria">[] | null;
 }
 
 export interface AluguelLatao {

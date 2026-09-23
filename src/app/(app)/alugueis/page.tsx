@@ -2,8 +2,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { LinkButton } from "@/components/ui/Button";
 import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
-import { AluguelStatusBadge } from "@/components/ui/Badge";
+import { AluguelStatusBadge, FinanceiroStatusBadge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
+import { LancamentoStatusSelect } from "@/components/LancamentoStatusSelect";
 import { deleteAluguel } from "./actions";
 import { formatBRL, formatDate, todayISO } from "@/lib/format";
 import type { AluguelComCliente } from "@/lib/types";
@@ -20,7 +21,7 @@ export default async function AlugueisPage({
 
   let query = supabase
     .from("alugueis")
-    .select("*, clientes(id, nome, telefone)")
+    .select("*, clientes(id, nome, telefone), financeiro(id, status, tipo, categoria)")
     .order("data_entrega", { ascending: false });
 
   if (status) query = query.eq("status", status);
@@ -34,6 +35,8 @@ export default async function AlugueisPage({
       a.status === "ativo" && a.data_prevista_recolhimento && a.data_prevista_recolhimento < today
         ? "atrasado"
         : a.status,
+    pagamento:
+      a.financeiro?.find((f) => f.tipo === "entrada" && f.categoria === "aluguel_latao") ?? null,
   }));
 
   return (
@@ -74,6 +77,7 @@ export default async function AlugueisPage({
             <Th>Qtd.</Th>
             <Th>Valor</Th>
             <Th>Status</Th>
+            <Th>Pagamento</Th>
             <Th></Th>
           </tr>
         </Thead>
@@ -102,6 +106,16 @@ export default async function AlugueisPage({
                 <AluguelStatusBadge status={a.effectiveStatus} />
               </Td>
               <Td>
+                {a.pagamento ? (
+                  <div className="flex items-center gap-2">
+                    <FinanceiroStatusBadge status={a.pagamento.status} />
+                    <LancamentoStatusSelect id={a.pagamento.id} status={a.pagamento.status} />
+                  </div>
+                ) : (
+                  "-"
+                )}
+              </Td>
+              <Td>
                 <DeleteButton
                   onDelete={deleteAluguel.bind(null, a.id)}
                   confirmMessage={`Excluir o aluguel em "${a.endereco_obra}"? O lançamento financeiro vinculado também será removido.`}
@@ -111,7 +125,7 @@ export default async function AlugueisPage({
           ))}
           {!displayed?.length && (
             <Tr>
-              <Td colSpan={8} className="text-center text-gray-400">
+              <Td colSpan={9} className="text-center text-gray-400">
                 Nenhum aluguel encontrado.
               </Td>
             </Tr>
