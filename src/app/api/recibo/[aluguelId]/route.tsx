@@ -6,71 +6,90 @@ import type { AluguelComCliente } from "@/lib/types";
 
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
-    fontSize: 10,
+    padding: 24,
+    fontSize: 8.5,
     fontFamily: "Helvetica",
     color: "#001B43",
   },
+  via: {
+    height: 385,
+  },
   header: {
-    marginBottom: 20,
-    borderBottom: "2 solid #056CF2",
-    paddingBottom: 10,
+    marginBottom: 8,
+    borderBottom: "1.5 solid #056CF2",
+    paddingBottom: 6,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
   },
   title: {
-    fontSize: 18,
+    fontSize: 13,
     fontWeight: "bold",
     color: "#001B43",
   },
   subtitle: {
-    fontSize: 10,
+    fontSize: 8,
     color: "#03258C",
-    marginTop: 2,
+    marginTop: 1,
+  },
+  viaLabel: {
+    fontSize: 8,
+    fontWeight: "bold",
+    color: "#056CF2",
+    border: "1 solid #056CF2",
+    borderRadius: 3,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 9.5,
     fontWeight: "bold",
-    marginTop: 16,
-    marginBottom: 6,
+    marginTop: 8,
+    marginBottom: 3,
     color: "#022873",
   },
   row: {
     flexDirection: "row",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   label: {
-    width: 160,
+    width: 130,
     fontWeight: "bold",
   },
   value: {
     flex: 1,
   },
   rules: {
-    marginTop: 4,
-    lineHeight: 1.5,
+    marginTop: 2,
+    lineHeight: 1.3,
+    fontSize: 7,
+    color: "#374151",
   },
   ruleItem: {
-    marginBottom: 4,
+    marginBottom: 1,
   },
   signatureBlock: {
-    marginTop: 60,
+    marginTop: 16,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   signatureLine: {
     width: "45%",
     borderTop: "1 solid #001B43",
-    paddingTop: 4,
+    paddingTop: 3,
     textAlign: "center",
-    fontSize: 9,
-  },
-  footer: {
-    position: "absolute",
-    bottom: 20,
-    left: 40,
-    right: 40,
     fontSize: 8,
-    color: "#6b7280",
+  },
+  cutLine: {
+    borderTop: "1 dashed #9ca3af",
+    marginVertical: 10,
+    position: "relative",
+  },
+  cutLabel: {
+    fontSize: 7,
+    color: "#9ca3af",
     textAlign: "center",
+    marginTop: -6,
   },
 });
 
@@ -85,6 +104,75 @@ const REGRAS = [
   "5. A permanência do latão além do prazo contratado poderá gerar cobrança adicional por dia excedente.",
   "6. O pagamento deverá ser realizado conforme forma e prazo acordados no ato da contratação.",
 ];
+
+function Via({ aluguel, label }: { aluguel: AluguelComCliente; label: string }) {
+  return (
+    <View style={styles.via}>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.title}>Tamboleco Mini Entulho</Text>
+          <Text style={styles.subtitle}>Recibo / Comprovante de Entrega de Latão</Text>
+          <Text style={styles.subtitle}>Emitido em {formatDateTime(new Date().toISOString())}</Text>
+        </View>
+        <Text style={styles.viaLabel}>{label}</Text>
+      </View>
+
+      <Text style={styles.sectionTitle}>Dados do Cliente</Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>Nome / Razão Social:</Text>
+        <Text style={styles.value}>{aluguel.clientes?.nome ?? "-"}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>CPF/CNPJ:</Text>
+        <Text style={styles.value}>{aluguel.clientes?.cpf_cnpj ?? "-"}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Telefone:</Text>
+        <Text style={styles.value}>{aluguel.clientes?.telefone ?? "-"}</Text>
+      </View>
+
+      <Text style={styles.sectionTitle}>Dados da Locação</Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>Endereço da Obra:</Text>
+        <Text style={styles.value}>{aluguel.endereco_obra}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Data de Entrega:</Text>
+        <Text style={styles.value}>{formatDate(aluguel.data_entrega)}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Quantidade de Latões:</Text>
+        <Text style={styles.value}>{aluguel.quantidade_latoes}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Recolhimento Previsto:</Text>
+        <Text style={styles.value}>{formatDate(aluguel.data_prevista_recolhimento)}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Valor do Serviço:</Text>
+        <Text style={styles.value}>{formatBRL(aluguel.valor_total)}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>Forma de Pagamento:</Text>
+        <Text style={styles.value}>{aluguel.forma_pagamento ?? "-"}</Text>
+      </View>
+
+      <Text style={styles.sectionTitle}>Regras da Locação</Text>
+      <View style={styles.rules}>
+        {REGRAS.map((r) => (
+          <Text key={r} style={styles.ruleItem}>
+            {r}
+          </Text>
+        ))}
+      </View>
+
+      <View style={styles.signatureBlock}>
+        <Text style={styles.signatureLine}>Assinatura do Cliente</Text>
+        <Text style={styles.signatureLine}>Assinatura do Responsável - Tamboleco</Text>
+      </View>
+    </View>
+  );
+}
 
 export async function GET(
   _req: NextRequest,
@@ -108,67 +196,12 @@ export async function GET(
   const doc = (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Tamboleco Mini Entulho</Text>
-          <Text style={styles.subtitle}>Recibo de Locação de Latão para Entulho</Text>
-          <Text style={styles.subtitle}>Emitido em {formatDateTime(new Date().toISOString())}</Text>
-        </View>
+        <Via aluguel={aluguel} label="1ª VIA — CLIENTE" />
 
-        <Text style={styles.sectionTitle}>Dados do Cliente</Text>
-        <View style={styles.row}>
-          <Text style={styles.label}>Nome / Razão Social:</Text>
-          <Text style={styles.value}>{aluguel.clientes?.nome ?? "-"}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>CPF/CNPJ:</Text>
-          <Text style={styles.value}>{aluguel.clientes?.cpf_cnpj ?? "-"}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Telefone:</Text>
-          <Text style={styles.value}>{aluguel.clientes?.telefone ?? "-"}</Text>
-        </View>
+        <View style={styles.cutLine} />
+        <Text style={styles.cutLabel}>✂ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</Text>
 
-        <Text style={styles.sectionTitle}>Dados da Locação</Text>
-        <View style={styles.row}>
-          <Text style={styles.label}>Endereço da Obra:</Text>
-          <Text style={styles.value}>{aluguel.endereco_obra}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Data e Hora de Entrega:</Text>
-          <Text style={styles.value}>{formatDate(aluguel.data_entrega)}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Quantidade de Latões:</Text>
-          <Text style={styles.value}>{aluguel.quantidade_latoes}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Recolhimento Previsto:</Text>
-          <Text style={styles.value}>{formatDate(aluguel.data_prevista_recolhimento)}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Valor do Serviço:</Text>
-          <Text style={styles.value}>{formatBRL(aluguel.valor_total)}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.label}>Forma de Pagamento:</Text>
-          <Text style={styles.value}>{aluguel.forma_pagamento ?? "-"}</Text>
-        </View>
-
-        <Text style={styles.sectionTitle}>Regras da Locação</Text>
-        <View style={styles.rules}>
-          {REGRAS.map((r) => (
-            <Text key={r} style={styles.ruleItem}>
-              {r}
-            </Text>
-          ))}
-        </View>
-
-        <View style={styles.signatureBlock}>
-          <Text style={styles.signatureLine}>Assinatura do Cliente</Text>
-          <Text style={styles.signatureLine}>Assinatura do Responsável - Tamboleco</Text>
-        </View>
-
-        <Text style={styles.footer}>Tamboleco Mini Entulho</Text>
+        <Via aluguel={aluguel} label="2ª VIA — TAMBOLECO" />
       </Page>
     </Document>
   );

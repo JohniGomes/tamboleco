@@ -5,12 +5,13 @@ import { ClienteForm } from "@/components/ClienteForm";
 import { updateCliente } from "@/app/(app)/clientes/actions";
 import { deleteAluguel } from "@/app/(app)/alugueis/actions";
 import { deleteLancamento } from "@/app/(app)/financeiro/actions";
-import { Card } from "@/components/ui/Card";
+import { Card, StatCard } from "@/components/ui/Card";
 import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
 import { AluguelStatusBadge, FinanceiroStatusBadge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
+import { LancamentoStatusSelect } from "@/components/LancamentoStatusSelect";
 import { formatBRL, formatDate } from "@/lib/format";
-import type { Aluguel, Cliente, Financeiro } from "@/lib/types";
+import type { AluguelComCliente, Cliente, Financeiro } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ export default async function ClienteDetailPage({
     supabase.from("clientes").select("*").eq("id", id).single(),
     supabase
       .from("alugueis")
-      .select("*")
+      .select("*, financeiro(id, status, tipo, categoria)")
       .eq("cliente_id", id)
       .order("data_entrega", { ascending: false }),
     supabase
@@ -38,11 +39,27 @@ export default async function ClienteDetailPage({
 
   if (!cliente) return notFound();
 
+  const alugueisList = (alugueis as AluguelComCliente[] | null) ?? [];
+  const lancamentosList = (lancamentos as Financeiro[] | null) ?? [];
+
+  const totalLatoes = alugueisList.reduce((acc, a) => acc + (a.quantidade_latoes ?? 0), 0);
+  const entradas = lancamentosList.filter((f) => f.tipo === "entrada");
+  const totalPago = entradas.filter((f) => f.status === "pago").reduce((acc, f) => acc + Number(f.valor), 0);
+  const totalPendente = entradas.filter((f) => f.status === "pendente").reduce((acc, f) => acc + Number(f.valor), 0);
+  const totalAtrasado = entradas.filter((f) => f.status === "atrasado").reduce((acc, f) => acc + Number(f.valor), 0);
+
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-xl font-bold text-tamboleco-950">{(cliente as Cliente).nome}</h1>
         <p className="text-sm text-gray-500">Cadastrado em {formatDate((cliente as Cliente).created_at)}</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <StatCard label="Total de Latões Alugados" value={totalLatoes} />
+        <StatCard label="Total Pago" value={formatBRL(totalPago)} accent="text-status-ativo" />
+        <StatCard label="Total Pendente" value={formatBRL(totalPendente)} accent="text-status-pendente" />
+        <StatCard label="Total Atrasado" value={formatBRL(totalAtrasado)} accent="text-status-atrasado" />
       </div>
 
       <Card>
@@ -62,34 +79,50 @@ export default async function ClienteDetailPage({
               <Th>Qtd.</Th>
               <Th>Valor</Th>
               <Th>Status</Th>
+              <Th>Pagamento</Th>
               <Th></Th>
             </tr>
           </Thead>
           <tbody>
-            {(alugueis as Aluguel[] | null)?.map((a) => (
-              <Tr key={a.id}>
-                <Td>
-                  <Link href={`/alugueis/${a.id}`} className="text-tamboleco-500 hover:underline">
-                    {a.endereco_obra}
-                  </Link>
-                </Td>
-                <Td>{formatDate(a.data_entrega)}</Td>
-                <Td>{a.quantidade_latoes}</Td>
-                <Td>{formatBRL(a.valor_total)}</Td>
-                <Td>
-                  <AluguelStatusBadge status={a.status} />
-                </Td>
-                <Td>
-                  <DeleteButton
-                    onDelete={deleteAluguel.bind(null, a.id)}
-                    confirmMessage={`Excluir o aluguel em "${a.endereco_obra}"? O lançamento financeiro vinculado também será removido.`}
-                  />
-                </Td>
-              </Tr>
-            ))}
-            {!alugueis?.length && (
+            {alugueisList.map((a) => {
+              const pagamento = a.financeiro?.find(
+                (f) => f.tipo === "entrada" && f.categoria === "aluguel_latao"
+              );
+              return (
+                <Tr key={a.id}>
+                  <Td>
+                    <Link href={`/alugueis/${a.id}`} className="text-tamboleco-500 hover:underline">
+                      {a.endereco_obra}
+                    </Link>
+                  </Td>
+                  <Td>{formatDate(a.data_entrega)}</Td>
+                  <Td>{a.quantidade_latoes}</Td>
+                  <Td>{formatBRL(a.valor_total)}</Td>
+                  <Td>
+                    <AluguelStatusBadge status={a.status} />
+                  </Td>
+                  <Td>
+                    {pagamento ? (
+                      <div className="flex items-center gap-2">
+                        <FinanceiroStatusBadge status={pagamento.status} />
+                        <LancamentoStatusSelect id={pagamento.id} status={pagamento.status} />
+                      </div>
+                    ) : (
+                      "-"
+                    )}
+                  </Td>
+                  <Td>
+                    <DeleteButton
+                      onDelete={deleteAluguel.bind(null, a.id)}
+                      confirmMessage={`Excluir o aluguel em "${a.endereco_obra}"? O lançamento financeiro vinculado também será removido.`}
+                    />
+                  </Td>
+                </Tr>
+              );
+            })}
+            {!alugueisList.length && (
               <Tr>
-                <Td colSpan={6} className="text-center text-gray-400">
+                <Td colSpan={7} className="text-center text-gray-400">
                   Nenhum aluguel registrado.
                 </Td>
               </Tr>
@@ -112,7 +145,7 @@ export default async function ClienteDetailPage({
             </tr>
           </Thead>
           <tbody>
-            {(lancamentos as Financeiro[] | null)?.map((f) => (
+            {lancamentosList.map((f) => (
               <Tr key={f.id}>
                 <Td>{formatDate(f.data)}</Td>
                 <Td>{f.descricao}</Td>
@@ -131,7 +164,7 @@ export default async function ClienteDetailPage({
                 </Td>
               </Tr>
             ))}
-            {!lancamentos?.length && (
+            {!lancamentosList.length && (
               <Tr>
                 <Td colSpan={6} className="text-center text-gray-400">
                   Nenhum lançamento financeiro.
