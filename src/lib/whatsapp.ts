@@ -3,7 +3,7 @@ import type { AluguelComCliente } from "@/lib/types";
 
 // Placeholder rental terms - customize with the client's actual policy.
 export const REGRAS = [
-  "1. O latão deverá permanecer em local de fácil acesso para retirada, sem obstrução por veículos ou materiais.",
+  "1. O latão deverá permanecer em local de fácil acesso para retirada (térreo ou com acesso por elevador), sem obstrução por veículos ou materiais.",
   "2. É de responsabilidade do cliente o descarte de resíduos permitidos, sendo vedado o descarte de materiais tóxicos, químicos ou perigosos.",
   "3. O recolhimento será agendado em até 2 (dois) dias úteis após solicitação, salvo prazo previamente combinado.",
   "4. Em caso de dano, extravio ou uso indevido do equipamento, será cobrada taxa de reposição/reparo conforme avaliação técnica.",
