@@ -6,7 +6,7 @@ import { ChatWidget } from "@/components/ChatWidget";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen w-full">
-      <aside className="hidden w-60 shrink-0 flex-col bg-tamboleco-950 md:flex">
+      <aside className="hidden w-52 shrink-0 flex-col bg-tamboleco-950 md:flex">
         <div className="flex items-center gap-2 px-4 py-5">
           <div className="flex h-9 w-9 items-center justify-center">
             <Image
@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <span className="text-sm font-semibold text-white">Sistema de Gestão</span>
           <LogoutButton />
         </header>
-        <main className="flex-1 bg-background p-4 md:p-8">{children}</main>
+        <main className="flex-1 bg-background p-4 md:p-5">{children}</main>
       </div>
 
       <ChatWidget />

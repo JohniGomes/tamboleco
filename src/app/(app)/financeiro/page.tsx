@@ -84,7 +84,7 @@ export default async function FinanceiroPage({
         </button>
       </form>
 
-      <Table>
+      <Table fit>
         <Thead>
           <tr>
             <Th>Data</Th>

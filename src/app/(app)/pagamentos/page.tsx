@@ -96,7 +96,7 @@ export default async function PagamentosPage({
         ))}
       </div>
 
-      <Table>
+      <Table fit>
         <Thead>
           <tr>
             <Th>Data</Th>

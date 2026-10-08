@@ -1,10 +1,21 @@
 import { HTMLAttributes, TdHTMLAttributes, ThHTMLAttributes } from "react";
 import clsx from "clsx";
 
-export function Table({ className, ...props }: HTMLAttributes<HTMLTableElement>) {
+export function Table({
+  className,
+  fit = false,
+  ...props
+}: HTMLAttributes<HTMLTableElement> & { fit?: boolean }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-      <table className={clsx("w-full min-w-max text-sm", className)} {...props} />
+      <table
+        className={clsx(
+          "w-full text-sm",
+          fit ? "[&_td]:px-3 [&_th]:px-3" : "min-w-max",
+          className
+        )}
+        {...props}
+      />
     </div>
   );
 }

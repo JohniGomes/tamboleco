@@ -68,19 +68,17 @@ export default async function AlugueisPage({
         ))}
       </div>
 
-      <Table>
+      <Table fit>
         <Thead>
           <tr>
             <Th>Cliente</Th>
             <Th>Endereço da Obra</Th>
-            <Th>Entrega</Th>
-            <Th>Recolhimento Previsto</Th>
+            <Th>Datas</Th>
             <Th>Qtd.</Th>
             <Th>Valor</Th>
             <Th>Status</Th>
             <Th>Pagamento</Th>
-            <Th>WhatsApp</Th>
-            <Th></Th>
+            <Th>WhatsApp / Excluir</Th>
           </tr>
         </Thead>
         <tbody>
@@ -95,15 +93,23 @@ export default async function AlugueisPage({
                   "-"
                 )}
               </Td>
-              <Td>
+              <Td className="min-w-44">
                 <Link href={`/alugueis/${a.id}`} className="hover:underline">
                   {a.endereco_obra}
                 </Link>
               </Td>
-              <Td>{formatDate(a.data_entrega)}</Td>
-              <Td>{formatDate(a.data_prevista_recolhimento)}</Td>
+              <Td className="whitespace-nowrap">
+                <div>
+                  <span className="text-xs text-gray-400">Entrega </span>
+                  {formatDate(a.data_entrega)}
+                </div>
+                <div>
+                  <span className="text-xs text-gray-400">Recolh. </span>
+                  {formatDate(a.data_prevista_recolhimento)}
+                </div>
+              </Td>
               <Td>{a.quantidade_latoes}</Td>
-              <Td>{formatBRL(a.valor_total)}</Td>
+              <Td className="whitespace-nowrap">{formatBRL(a.valor_total)}</Td>
               <Td>
                 <AluguelStatusBadge status={a.effectiveStatus} />
               </Td>
@@ -111,19 +117,19 @@ export default async function AlugueisPage({
                 {a.pagamento ? <PagamentoStatus id={a.pagamento.id} status={a.pagamento.status} /> : "-"}
               </Td>
               <Td>
-                <AluguelWhatsAppButtons aluguel={a} />
-              </Td>
-              <Td>
-                <DeleteButton
-                  onDelete={deleteAluguel.bind(null, a.id)}
-                  confirmMessage={`Excluir o aluguel em "${a.endereco_obra}"? O lançamento financeiro vinculado também será removido.`}
-                />
+                <div className="flex items-center gap-1">
+                  <AluguelWhatsAppButtons aluguel={a} />
+                  <DeleteButton
+                    onDelete={deleteAluguel.bind(null, a.id)}
+                    confirmMessage={`Excluir o aluguel em "${a.endereco_obra}"? O lançamento financeiro vinculado também será removido.`}
+                  />
+                </div>
               </Td>
             </Tr>
           ))}
           {!displayed?.length && (
             <Tr>
-              <Td colSpan={10} className="text-center text-gray-400">
+              <Td colSpan={8} className="text-center text-gray-400">
                 Nenhum aluguel encontrado.
               </Td>
             </Tr>
