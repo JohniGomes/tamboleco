@@ -9,7 +9,7 @@ import { Card, StatCard } from "@/components/ui/Card";
 import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
 import { AluguelStatusBadge, FinanceiroStatusBadge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { LancamentoStatusSelect } from "@/components/LancamentoStatusSelect";
+import { PagamentoStatus } from "@/components/PagamentoStatus";
 import { formatBRL, formatDate } from "@/lib/format";
 import type { AluguelComCliente, Cliente, Financeiro } from "@/lib/types";
 
@@ -102,14 +102,7 @@ export default async function ClienteDetailPage({
                     <AluguelStatusBadge status={a.status} />
                   </Td>
                   <Td>
-                    {pagamento ? (
-                      <div className="flex items-center gap-2">
-                        <FinanceiroStatusBadge status={pagamento.status} />
-                        <LancamentoStatusSelect id={pagamento.id} status={pagamento.status} />
-                      </div>
-                    ) : (
-                      "-"
-                    )}
+                    {pagamento ? <PagamentoStatus id={pagamento.id} status={pagamento.status} /> : "-"}
                   </Td>
                   <Td>
                     <DeleteButton

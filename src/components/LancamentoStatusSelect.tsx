@@ -9,7 +9,15 @@ const OPTIONS = [
   { value: "atrasado", label: "Atrasado" },
 ];
 
-export function LancamentoStatusSelect({ id, status }: { id: string; status: string }) {
+export function LancamentoStatusSelect({
+  id,
+  status,
+  className,
+}: {
+  id: string;
+  status: string;
+  className?: string;
+}) {
   const [pending, startTransition] = useTransition();
 
   return (
@@ -17,7 +25,7 @@ export function LancamentoStatusSelect({ id, status }: { id: string; status: str
       defaultValue={status}
       disabled={pending}
       onChange={(e) => startTransition(() => updateLancamentoStatus(id, e.target.value))}
-      className="rounded-lg border border-gray-300 px-2 py-1 text-xs focus:border-tamboleco-500 focus:outline-none"
+      className={`rounded-lg border border-gray-300 px-2 py-1 text-xs focus:border-tamboleco-500 focus:outline-none ${className ?? ""}`}
     >
       {OPTIONS.map((o) => (
         <option key={o.value} value={o.value}>

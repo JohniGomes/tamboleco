@@ -10,12 +10,21 @@ const TONE_CLASSES: Record<BadgeTone, string> = {
   gray: "bg-gray-100 text-gray-700",
 };
 
-export function Badge({ tone = "gray", children }: { tone?: BadgeTone; children: React.ReactNode }) {
+export function Badge({
+  tone = "gray",
+  className,
+  children,
+}: {
+  tone?: BadgeTone;
+  className?: string;
+  children: React.ReactNode;
+}) {
   return (
     <span
       className={clsx(
         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold",
-        TONE_CLASSES[tone]
+        TONE_CLASSES[tone],
+        className
       )}
     >
       {children}
@@ -33,14 +42,18 @@ export function AluguelStatusBadge({ status }: { status: string }) {
   return <Badge tone={item.tone}>{item.label}</Badge>;
 }
 
-export function FinanceiroStatusBadge({ status }: { status: string }) {
+export function FinanceiroStatusBadge({ status, className }: { status: string; className?: string }) {
   const map: Record<string, { tone: BadgeTone; label: string }> = {
     pago: { tone: "green", label: "Pago" },
     pendente: { tone: "yellow", label: "Pendente" },
     atrasado: { tone: "red", label: "Atrasado" },
   };
   const item = map[status] ?? { tone: "gray", label: status };
-  return <Badge tone={item.tone}>{item.label}</Badge>;
+  return (
+    <Badge tone={item.tone} className={className}>
+      {item.label}
+    </Badge>
+  );
 }
 
 export function LataoStatusBadge({ status }: { status: string }) {

@@ -1,8 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { StatCard } from "@/components/ui/Card";
 import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
-import { FinanceiroStatusBadge } from "@/components/ui/Badge";
-import { LancamentoStatusSelect } from "@/components/LancamentoStatusSelect";
+import { PagamentoStatus } from "@/components/PagamentoStatus";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { deleteLancamento } from "@/app/(app)/financeiro/actions";
 import { formatBRL, formatDate, todayISO } from "@/lib/format";
@@ -119,9 +118,8 @@ export default async function PagamentosPage({
               <Td>{f.clientes?.nome ?? "-"}</Td>
               <Td>{f.tipo === "entrada" ? "Entrada" : "Saída"}</Td>
               <Td>{formatBRL(f.valor)}</Td>
-              <Td className="flex items-center gap-2">
-                <FinanceiroStatusBadge status={f.status} />
-                <LancamentoStatusSelect id={f.id} status={f.status} />
+              <Td>
+                <PagamentoStatus id={f.id} status={f.status} />
               </Td>
               <Td>
                 <DeleteButton

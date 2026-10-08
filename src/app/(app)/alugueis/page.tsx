@@ -2,9 +2,10 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { LinkButton } from "@/components/ui/Button";
 import { Table, Thead, Th, Tr, Td } from "@/components/ui/Table";
-import { AluguelStatusBadge, FinanceiroStatusBadge } from "@/components/ui/Badge";
+import { AluguelStatusBadge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { LancamentoStatusSelect } from "@/components/LancamentoStatusSelect";
+import { PagamentoStatus } from "@/components/PagamentoStatus";
+import { AluguelWhatsAppButtons } from "@/components/AluguelWhatsAppButtons";
 import { deleteAluguel } from "./actions";
 import { formatBRL, formatDate, todayISO } from "@/lib/format";
 import type { AluguelComCliente } from "@/lib/types";
@@ -78,6 +79,7 @@ export default async function AlugueisPage({
             <Th>Valor</Th>
             <Th>Status</Th>
             <Th>Pagamento</Th>
+            <Th>WhatsApp</Th>
             <Th></Th>
           </tr>
         </Thead>
@@ -106,14 +108,10 @@ export default async function AlugueisPage({
                 <AluguelStatusBadge status={a.effectiveStatus} />
               </Td>
               <Td>
-                {a.pagamento ? (
-                  <div className="flex items-center gap-2">
-                    <FinanceiroStatusBadge status={a.pagamento.status} />
-                    <LancamentoStatusSelect id={a.pagamento.id} status={a.pagamento.status} />
-                  </div>
-                ) : (
-                  "-"
-                )}
+                {a.pagamento ? <PagamentoStatus id={a.pagamento.id} status={a.pagamento.status} /> : "-"}
+              </Td>
+              <Td>
+                <AluguelWhatsAppButtons aluguel={a} />
               </Td>
               <Td>
                 <DeleteButton
@@ -125,7 +123,7 @@ export default async function AlugueisPage({
           ))}
           {!displayed?.length && (
             <Tr>
-              <Td colSpan={9} className="text-center text-gray-400">
+              <Td colSpan={10} className="text-center text-gray-400">
                 Nenhum aluguel encontrado.
               </Td>
             </Tr>

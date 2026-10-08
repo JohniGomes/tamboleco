@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { renderToBuffer, Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";
 import { formatBRL, formatDate, formatDateTime } from "@/lib/format";
+import { REGRAS } from "@/lib/whatsapp";
 import type { AluguelComCliente } from "@/lib/types";
 
 const styles = StyleSheet.create({
@@ -92,18 +93,6 @@ const styles = StyleSheet.create({
     marginTop: -6,
   },
 });
-
-// NOTE: Placeholder rental terms - customize with the client's actual policy.
-// This receipt is a rendered PDF only; it is not a legally binding e-signature.
-// A future iteration could integrate a real e-signature provider (e.g. DocuSign, Clicksign).
-const REGRAS = [
-  "1. O latão deverá permanecer em local de fácil acesso para retirada, sem obstrução por veículos ou materiais.",
-  "2. É de responsabilidade do cliente o descarte de resíduos permitidos, sendo vedado o descarte de materiais tóxicos, químicos ou perigosos.",
-  "3. O recolhimento será agendado em até 2 (dois) dias úteis após solicitação, salvo prazo previamente combinado.",
-  "4. Em caso de dano, extravio ou uso indevido do equipamento, será cobrada taxa de reposição/reparo conforme avaliação técnica.",
-  "5. A permanência do latão além do prazo contratado poderá gerar cobrança adicional por dia excedente.",
-  "6. O pagamento deverá ser realizado conforme forma e prazo acordados no ato da contratação.",
-];
 
 function Via({ aluguel, label }: { aluguel: AluguelComCliente; label: string }) {
   return (

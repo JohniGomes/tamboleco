@@ -7,6 +7,7 @@ import { LinkButton } from "@/components/ui/Button";
 import { RecolherButton } from "@/components/RecolherButton";
 import { ReciboUploader } from "@/components/ReciboUploader";
 import { AluguelDeleteButton } from "@/components/AluguelDeleteButton";
+import { AluguelWhatsAppButtons } from "@/components/AluguelWhatsAppButtons";
 import { AluguelForm } from "@/components/AluguelForm";
 import { updateAluguel } from "@/app/(app)/alugueis/actions";
 import { formatDate, todayISO } from "@/lib/format";
@@ -85,8 +86,9 @@ export default async function AluguelDetailPage({
         )}
       </Card>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         {aluguel.status === "ativo" && <RecolherButton aluguelId={aluguel.id} />}
+        <AluguelWhatsAppButtons aluguel={aluguel} full />
         <a
           href={`/api/recibo/${aluguel.id}`}
           target="_blank"
