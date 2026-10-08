@@ -43,29 +43,29 @@ export function mensagemCliente(aluguel: AluguelComCliente): string {
     "*Tamboleco Mini Entulho*",
     `Olá, ${aluguel.clientes?.nome ?? "tudo bem"}! Seguem os dados da sua locação:`,
     "",
-    `📍 *Local da obra:* ${aluguel.endereco_obra}`,
-    `📅 *Entrega:* ${formatDate(aluguel.data_entrega)}`,
+    `*Local da obra:* ${aluguel.endereco_obra}`,
+    `*Entrega:* ${formatDate(aluguel.data_entrega)}`,
   ];
   if (aluguel.data_prevista_recolhimento) {
-    linhas.push(`📅 *Recolhimento previsto:* ${formatDate(aluguel.data_prevista_recolhimento)}`);
+    linhas.push(`*Recolhimento previsto:* ${formatDate(aluguel.data_prevista_recolhimento)}`);
   }
-  linhas.push(`🗑️ *Quantidade:* ${quantidadeTexto(aluguel.quantidade_latoes)}`);
+  linhas.push(`*Quantidade:* ${quantidadeTexto(aluguel.quantidade_latoes)}`);
   if (aluguel.valor_unitario != null) {
-    linhas.push(`💵 *Valor unitário:* ${formatBRL(aluguel.valor_unitario)}`);
+    linhas.push(`*Valor unitário:* ${formatBRL(aluguel.valor_unitario)}`);
   }
   if (aluguel.valor_total != null) {
-    linhas.push(`💰 *Valor total:* ${formatBRL(aluguel.valor_total)}`);
+    linhas.push(`*Valor total:* ${formatBRL(aluguel.valor_total)}`);
   }
   if (aluguel.forma_pagamento) {
-    linhas.push(`💳 *Forma de pagamento:* ${aluguel.forma_pagamento}`);
+    linhas.push(`*Forma de pagamento:* ${aluguel.forma_pagamento}`);
   }
-  linhas.push("", "📋 *Regras da locação:*", ...REGRAS, "", "Qualquer dúvida, é só chamar. Obrigado!");
+  linhas.push("", "*Regras da locação:*", ...REGRAS, "", "Qualquer dúvida, é só chamar. Obrigado!");
   return linhas.join("\n");
 }
 
 export function mensagemEquipe(aluguel: AluguelComCliente): string {
   const linhas = [
-    "📝 *Ficha de Locação — Tamboleco*",
+    "*Ficha de Locação — Tamboleco*",
     "",
     `*Cliente:* ${aluguel.clientes?.nome ?? "-"}`,
     `*Contato:* ${formatPhone(aluguel.clientes?.telefone)}`,
@@ -75,7 +75,7 @@ export function mensagemEquipe(aluguel: AluguelComCliente): string {
   if (aluguel.data_prevista_recolhimento) {
     linhas.push(`*Recolhimento previsto:* ${formatDate(aluguel.data_prevista_recolhimento)}`);
   }
-  linhas.push("", "*Local:*", `📍 ${aluguel.endereco_obra}`);
+  linhas.push("", "*Local:*", `${aluguel.endereco_obra}`);
   if (aluguel.observacoes) {
     linhas.push("", `*Obs.:* ${aluguel.observacoes}`);
   }
