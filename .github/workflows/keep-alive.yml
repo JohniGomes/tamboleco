@@ -25,14 +25,14 @@ jobs:
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
             -H "Content-Type: application/json" -d '{}') || rpc_code="000"
-          echo "HTTP $rpc_code"; cat rpc.txt 2>/dev/null; echo
+          echo "HTTP $rpc_code"; { cat rpc.txt 2>/dev/null || true; }; echo
 
           echo "2) Leitura simples em clientes"
           sel_code=$(curl -sS -o sel.txt -w "%{http_code}" \
             "$SUPABASE_URL/rest/v1/clientes?select=id&limit=1" \
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY") || sel_code="000"
-          echo "HTTP $sel_code"; cat sel.txt 2>/dev/null; echo
+          echo "HTTP $sel_code"; { cat sel.txt 2>/dev/null || true; }; echo
 
           case "$rpc_code$sel_code" in
             2??*|*2??)
