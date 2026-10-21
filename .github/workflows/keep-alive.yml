@@ -1,0 +1,43 @@
+name: Keep Supabase alive
+
+# Segundo agendador, independente da Vercel. Falhou = o Supabase esta pausado
+# (ou fora do ar): o GitHub avisa por e-mail o dono do repositorio.
+on:
+  schedule:
+    - cron: "17 */8 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -u
+
+          echo "1) Escrita via RPC keep_alive_ping"
+          rpc_code=$(curl -sS -o rpc.txt -w "%{http_code}" -X POST \
+            "$SUPABASE_URL/rest/v1/rpc/keep_alive_ping" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" -d '{}') || rpc_code="000"
+          echo "HTTP $rpc_code"; cat rpc.txt 2>/dev/null; echo
+
+          echo "2) Leitura simples em clientes"
+          sel_code=$(curl -sS -o sel.txt -w "%{http_code}" \
+            "$SUPABASE_URL/rest/v1/clientes?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY") || sel_code="000"
+          echo "HTTP $sel_code"; cat sel.txt 2>/dev/null; echo
+
+          case "$rpc_code$sel_code" in
+            2??*|*2??)
+              echo "Supabase respondeu: projeto ativo." ;;
+            *)
+              echo "::error::Supabase nao respondeu (RPC=$rpc_code, SELECT=$sel_code). Projeto provavelmente PAUSADO: restaure em supabase.com/dashboard."
+              exit 1 ;;
+          esac
