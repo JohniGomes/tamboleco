@@ -16,7 +16,7 @@ export function AluguelForm({
   action,
   submitLabel,
 }: {
-  clientes: Pick<Cliente, "id" | "nome" | "cpf_cnpj">[];
+  clientes: Pick<Cliente, "id" | "nome" | "cpf_cnpj" | "endereco">[];
   aluguel?: Aluguel;
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   submitLabel: string;
@@ -27,6 +27,14 @@ export function AluguelForm({
   const [valorUnitario, setValorUnitario] = useState(aluguel?.valor_unitario ?? 0);
   const [valorTotal, setValorTotal] = useState(aluguel?.valor_total ?? 0);
   const [totalEditadoManualmente, setTotalEditadoManualmente] = useState(false);
+  const [endereco, setEndereco] = useState(aluguel?.endereco_obra ?? "");
+  const [enderecoEditado, setEnderecoEditado] = useState(Boolean(aluguel?.endereco_obra));
+
+  function selecionarCliente(clienteId: string) {
+    if (enderecoEditado) return;
+    const cliente = clientes.find((c) => c.id === clienteId);
+    setEndereco(cliente?.endereco ?? "");
+  }
 
   const clientesFiltrados = useMemo(() => {
     if (!clienteFiltro) return clientes;
@@ -49,7 +57,12 @@ export function AluguelForm({
           onChange={(e) => setClienteFiltro(e.target.value)}
           className="mb-2"
         />
-        <Select name="cliente_id" required defaultValue={aluguel?.cliente_id ?? ""}>
+        <Select
+          name="cliente_id"
+          required
+          defaultValue={aluguel?.cliente_id ?? ""}
+          onChange={(e) => selecionarCliente(e.target.value)}
+        >
           <option value="" disabled>
             Selecione um cliente
           </option>
@@ -62,7 +75,18 @@ export function AluguelForm({
       </Field>
 
       <Field label="Endereço da Obra" required>
-        <Input name="endereco_obra" required defaultValue={aluguel?.endereco_obra} />
+        <Input
+          name="endereco_obra"
+          required
+          value={endereco}
+          onChange={(e) => {
+            setEndereco(e.target.value);
+            setEnderecoEditado(e.target.value !== "");
+          }}
+        />
+        <p className="mt-1 text-xs text-gray-400">
+          Preenchido com o endereço do cliente ao selecioná-lo; você pode editar.
+        </p>
       </Field>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

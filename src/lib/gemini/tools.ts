@@ -65,7 +65,7 @@ export const toolDeclarations: FunctionDeclaration[] = [
       type: Type.OBJECT,
       properties: {
         cliente_nome: { type: Type.STRING, description: "Nome (ou parte do nome) do cliente já cadastrado." },
-        endereco_obra: { type: Type.STRING, description: "Endereço da obra onde o(s) latão(ões) será(ão) entregue(s)." },
+        endereco_obra: { type: Type.STRING, description: "Endereço da obra onde o(s) latão(ões) será(ão) entregue(s). Opcional: se o usuário não informar, usa o endereço cadastrado do cliente." },
         quantidade_latoes: { type: Type.NUMBER, description: "Quantidade de latões, padrão 1." },
         valor_unitario: { type: Type.NUMBER, description: "Valor unitário do aluguel, em reais." },
         data_entrega: { type: Type.STRING, description: "Data de entrega no formato YYYY-MM-DD. Se o usuário disser 'hoje' ou 'amanhã', calcule a data real." },
@@ -73,7 +73,7 @@ export const toolDeclarations: FunctionDeclaration[] = [
         forma_pagamento: { type: Type.STRING, description: "Forma de pagamento, se informada (Pix, Dinheiro, Cartão, etc)." },
         observacoes: { type: Type.STRING },
       },
-      required: ["cliente_nome", "endereco_obra"],
+      required: ["cliente_nome"],
     },
   },
 ];
@@ -243,7 +243,7 @@ async function criarRascunhoAluguel(supabase: Supabase, args: Record<string, unk
   const clienteNome = String(args.cliente_nome ?? "").trim();
   const { data: matches } = await supabase
     .from("clientes")
-    .select("id, nome, telefone")
+    .select("id, nome, telefone, endereco")
     .ilike("nome", `%${clienteNome}%`)
     .limit(5);
 
@@ -262,6 +262,13 @@ async function criarRascunhoAluguel(supabase: Supabase, args: Record<string, unk
   }
 
   const cliente = matches[0];
+  const enderecoObra = String(args.endereco_obra ?? "").trim() || cliente.endereco?.trim() || "";
+  if (!enderecoObra) {
+    return {
+      status: "endereco_faltando",
+      mensagem: `O cliente ${cliente.nome} não tem endereço cadastrado e o usuário não informou o endereço da obra. Pergunte o endereço.`,
+    };
+  }
   const quantidade = Number(args.quantidade_latoes ?? 1) || 1;
   const valorUnitario = args.valor_unitario != null ? Number(args.valor_unitario) : null;
   const valorTotal = valorUnitario != null ? valorUnitario * quantidade : null;
@@ -269,7 +276,7 @@ async function criarRascunhoAluguel(supabase: Supabase, args: Record<string, unk
   const draft = {
     cliente_id: cliente.id,
     cliente_nome: cliente.nome,
-    endereco_obra: String(args.endereco_obra ?? ""),
+    endereco_obra: enderecoObra,
     quantidade_latoes: quantidade,
     valor_unitario: valorUnitario,
     valor_total: valorTotal,

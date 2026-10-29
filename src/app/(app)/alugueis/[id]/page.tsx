@@ -29,7 +29,7 @@ export default async function AluguelDetailPage({
       .select("*, clientes(id, nome, telefone, cpf_cnpj, endereco)")
       .eq("id", id)
       .single(),
-    supabase.from("clientes").select("id, nome, cpf_cnpj").order("nome"),
+    supabase.from("clientes").select("id, nome, cpf_cnpj, endereco").order("nome"),
   ]);
 
   if (!data) return notFound();

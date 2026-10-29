@@ -6,7 +6,7 @@ export default async function NovoAluguelPage() {
   const supabase = await createClient();
   const { data: clientes } = await supabase
     .from("clientes")
-    .select("id, nome, cpf_cnpj")
+    .select("id, nome, cpf_cnpj, endereco")
     .order("nome");
 
   return (
