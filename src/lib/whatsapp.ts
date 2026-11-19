@@ -63,6 +63,29 @@ export function mensagemCliente(aluguel: AluguelComCliente): string {
   return linhas.join("\n");
 }
 
+export function mensagemRecolhimento(aluguel: AluguelComCliente): string {
+  const qtd = aluguel.quantidade_latoes;
+  const linhas = [
+    "*Ficha de Recolhimento — Tamboleco*",
+    "",
+    `*Cliente:* ${aluguel.clientes?.nome ?? "-"}`,
+    `*Contato:* ${formatPhone(aluguel.clientes?.telefone)}`,
+    `*Quantidade:* ${qtd} ${qtd === 1 ? "tambor" : "tambores"}`,
+    "*Serviço:* Recolher entulho",
+    `*Entregue em:* ${formatDate(aluguel.data_entrega)}`,
+    `*Data do recolhimento:* ${
+      aluguel.data_prevista_recolhimento ? formatDate(aluguel.data_prevista_recolhimento) : "a combinar"
+    }`,
+    "",
+    "*Local:*",
+    `${aluguel.endereco_obra}`,
+  ];
+  if (aluguel.observacoes) {
+    linhas.push("", `*Obs.:* ${aluguel.observacoes}`);
+  }
+  return linhas.join("\n");
+}
+
 export function mensagemEquipe(aluguel: AluguelComCliente): string {
   const linhas = [
     "*Ficha de Locação — Tamboleco*",

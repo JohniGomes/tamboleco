@@ -1,5 +1,11 @@
 import clsx from "clsx";
-import { clientePhoneValido, mensagemCliente, mensagemEquipe, whatsappLink } from "@/lib/whatsapp";
+import {
+  clientePhoneValido,
+  mensagemCliente,
+  mensagemEquipe,
+  mensagemRecolhimento,
+  whatsappLink,
+} from "@/lib/whatsapp";
 import type { AluguelComCliente } from "@/lib/types";
 
 function WhatsAppIcon() {
@@ -55,6 +61,18 @@ export function AluguelWhatsAppButtons({
         <WhatsAppIcon />
         {full ? "Enviar à equipe" : "Equipe"}
       </a>
+      {aluguel.status !== "recolhido" && (
+        <a
+          href={whatsappLink(mensagemRecolhimento(aluguel))}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Enviar ficha de recolhimento para o grupo da equipe no WhatsApp"
+          className={clsx(BASE, size, "border border-sky-600 text-sky-700 hover:bg-sky-50")}
+        >
+          <WhatsAppIcon />
+          {full ? "Enviar recolhimento" : "Recolher"}
+        </a>
+      )}
     </div>
   );
 }
